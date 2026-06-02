@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSE BV — Kanker Scammer Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --neon: #00FFB2; --neon2: #00C8FF;
+    --dark: #080C14; --dark2: #0D1321; --dark3: #111927;
+    --text: #E8F0FF; --muted: #6B7FA3; --border: rgba(0,255,178,0.15);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Syne', sans-serif; background: var(--dark); color: var(--text); overflow-x: hidden; cursor: crosshair; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,255,178,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,178,0.04) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+  body::after { content: ''; position: fixed; top: -100%; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--neon), transparent); animation: scan 6s linear infinite; z-index: 1; pointer-events: none; }
+  @keyframes scan { 0% { top: -2px; opacity: 1; } 100% { top: 100%; opacity: 0.3; } }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 4rem; border-bottom: 1px solid var(--border); background: rgba(8,12,20,0.85); backdrop-filter: blur(20px); }
+  .logo { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.15em; color: var(--neon); text-transform: uppercase; }
+  .logo span { color: var(--text); opacity: 0.5; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; position: relative; }
+  .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: var(--neon); transition: width 0.3s; }
+  .nav-links a:hover { color: var(--neon); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dark); background: var(--neon); border: none; padding: 0.6rem 1.4rem; cursor: crosshair; transition: background 0.2s; }
+  .nav-cta:hover { background: #00e0a0; }
+
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 0 4rem; z-index: 2; overflow: hidden; }
+  .hero-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--neon); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; opacity: 0; animation: fadeUp 0.8s 0.2s forwards; }
+  .hero-tag::before { content: ''; display: block; width: 30px; height: 1px; background: var(--neon); }
+  .hero h1 { font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s 0.4s forwards; }
+  .hero h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 2px var(--neon); }
+  .hero h1 .line2 { display: block; color: var(--neon); }
+  .hero-sub { font-family: 'Space Mono', monospace; font-size: 0.9rem; line-height: 1.8; color: var(--muted); max-width: 520px; margin-bottom: 3rem; opacity: 0; animation: fadeUp 0.8s 0.6s forwards; }
+  .hero-btns { display: flex; gap: 1rem; opacity: 0; animation: fadeUp 0.8s 0.8s forwards; }
+  .btn-primary { font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dark); background: var(--neon); border: none; padding: 1rem 2.2rem; cursor: crosshair; text-decoration: none; display: inline-block; transition: background 0.2s, transform 0.15s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); }
+  .btn-primary:hover { background: #00e0a0; transform: translateY(-2px); }
+  .btn-secondary { font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--neon); background: transparent; border: 1px solid var(--border); padding: 1rem 2.2rem; cursor: crosshair; text-decoration: none; display: inline-block; transition: border-color 0.2s, background 0.2s; }
+  .btn-secondary:hover { border-color: var(--neon); background: rgba(0,255,178,0.05); }
+
+  .hero-visual { position: absolute; right: -60px; top: 50%; transform: translateY(-50%); width: 520px; height: 520px; opacity: 0; animation: fadeIn 1.2s 1s forwards; }
+  .orbit-ring { position: absolute; border: 1px solid; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  .ring1 { width: 180px; height: 180px; border-color: rgba(0,255,178,0.3); animation: spinSlow 8s linear infinite; }
+  .ring2 { width: 300px; height: 300px; border-color: rgba(0,200,255,0.2); animation: spinSlow 14s linear infinite reverse; }
+  .ring3 { width: 420px; height: 420px; border-color: rgba(0,255,178,0.1); animation: spinSlow 22s linear infinite; }
+  .ring4 { width: 520px; height: 520px; border-color: rgba(0,200,255,0.07); animation: spinSlow 30s linear infinite reverse; }
+  .orbit-dot { position: absolute; width: 8px; height: 8px; background: var(--neon); border-radius: 50%; top: -4px; left: 50%; margin-left: -4px; box-shadow: 0 0 12px var(--neon); }
+  .orbit-dot2 { position: absolute; width: 6px; height: 6px; background: var(--neon2); border-radius: 50%; top: -3px; left: 50%; margin-left: -3px; box-shadow: 0 0 10px var(--neon2); }
+  .center-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; }
+  .center-icon svg { width: 60px; height: 60px; filter: drop-shadow(0 0 20px rgba(0,255,178,0.5)); animation: pulse 2s ease-in-out infinite; }
+
+  @keyframes spinSlow { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 0.8; } }
+
+  .stats-bar { position: relative; z-index: 2; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--dark2); display: flex; overflow: hidden; }
+  .stat-item { flex: 1; padding: 2rem 3rem; border-right: 1px solid var(--border); transition: background 0.3s; position: relative; overflow: hidden; }
+  .stat-item:last-child { border-right: none; }
+  .stat-item:hover { background: rgba(0,255,178,0.03); }
+  .stat-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--neon); transform: scaleX(0); transition: transform 0.4s; transform-origin: left; }
+  .stat-item:hover::before { transform: scaleX(1); }
+  .stat-num { font-size: 2.8rem; font-weight: 800; color: var(--neon); letter-spacing: -0.03em; line-height: 1; display: block; }
+  .stat-label { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; display: block; }
+
+  section { position: relative; z-index: 2; padding: 8rem 4rem; }
+  .section-label { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--neon); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--neon); }
+  .section-title { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.5rem; line-height: 1.1; }
+  .section-title em { font-style: normal; color: var(--neon); }
+
+  .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 4rem; border: 1px solid var(--border); }
+  .service-main { padding: 3rem; border-right: 1px solid var(--border); background: var(--dark2); position: relative; overflow: hidden; }
+  .service-main::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--neon), var(--neon2)); }
+  .service-icon { width: 64px; height: 64px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
+  .service-icon svg { width: 28px; height: 28px; stroke: var(--neon); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+  .service-name { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.8rem; }
+  .service-desc { font-family: 'Space Mono', monospace; font-size: 0.8rem; line-height: 1.9; color: var(--muted); margin-bottom: 2rem; }
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+  .feature-list li { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--text); display: flex; align-items: center; gap: 0.8rem; }
+  .feature-list li::before { content: '▸'; color: var(--neon); font-size: 0.7rem; flex-shrink: 0; }
+  .service-side { display: flex; flex-direction: column; }
+  .metric-box { flex: 1; padding: 2rem 2.5rem; border-bottom: 1px solid var(--border); background: var(--dark3); transition: background 0.3s; }
+  .metric-box:last-child { border-bottom: none; }
+  .metric-box:hover { background: rgba(0,255,178,0.02); }
+  .metric-val { font-size: 2.2rem; font-weight: 800; color: var(--neon2); letter-spacing: -0.03em; line-height: 1; display: block; }
+  .metric-key { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; display: block; }
+  .metric-note { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text); opacity: 0.6; margin-top: 0.5rem; display: block; line-height: 1.6; }
+
+  .process-section { background: var(--dark2); }
+  .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 4rem; border: 1px solid var(--border); }
+  .process-step { padding: 2.5rem; border-right: 1px solid var(--border); transition: background 0.3s; }
+  .process-step:last-child { border-right: none; }
+  .process-step:hover { background: rgba(0,255,178,0.03); }
+  .step-num { font-family: 'Space Mono', monospace; font-size: 3rem; font-weight: 700; color: transparent; -webkit-text-stroke: 1px rgba(0,255,178,0.2); line-height: 1; margin-bottom: 1rem; display: block; }
+  .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text); }
+  .step-desc { font-family: 'Space Mono', monospace; font-size: 0.72rem; line-height: 1.8; color: var(--muted); }
+
+  .who-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 4rem; background: var(--border); border: 1px solid var(--border); }
+  .who-card { background: var(--dark); padding: 2.5rem; transition: background 0.3s; position: relative; overflow: hidden; }
+  .who-card:hover { background: var(--dark2); }
+  .who-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: var(--neon); transform: scaleX(0); transition: transform 0.4s; transform-origin: left; }
+  .who-card:hover::after { transform: scaleX(1); }
+  .who-icon { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--neon); margin-bottom: 1rem; display: block; }
+  .who-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .who-desc { font-family: 'Space Mono', monospace; font-size: 0.72rem; line-height: 1.8; color: var(--muted); }
+
+  .founder-section { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; border: 1px solid var(--border); background: var(--dark2); overflow: hidden; }
+  .founder-info { padding: 4rem; border-right: 1px solid var(--border); }
+  .founder-tag { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--neon); margin-bottom: 2rem; display: block; }
+  .founder-name { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.3rem; line-height: 1; }
+  .founder-fullname { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: rgba(0,255,178,0.4); margin-bottom: 0.4rem; display: block; text-transform: uppercase; }
+  .founder-title { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--neon2); letter-spacing: 0.1em; margin-bottom: 2rem; display: block; }
+  .founder-bio { font-family: 'Space Mono', monospace; font-size: 0.78rem; line-height: 1.9; color: var(--muted); }
+  .founder-visual { padding: 4rem; display: flex; align-items: center; justify-content: center; background: var(--dark3); position: relative; overflow: hidden; }
+  .founder-avatar { width: 140px; height: 140px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+  .avatar-initials { font-size: 3.5rem; font-weight: 800; color: var(--neon); }
+  .founder-visual::before { content: ''; position: absolute; width: 300px; height: 300px; border: 1px solid rgba(0,255,178,0.08); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: expandRing 3s ease-in-out infinite; }
+  .founder-visual::after { content: ''; position: absolute; width: 200px; height: 200px; border: 1px solid rgba(0,200,255,0.12); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: expandRing 3s ease-in-out infinite 1s; }
+  @keyframes expandRing { 0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; } }
+  .location-tag { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); white-space: nowrap; display: flex; align-items: center; gap: 0.5rem; z-index: 1; }
+  .location-tag::before { content: '◉'; color: var(--neon); font-size: 0.5rem; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  .cta-section { text-align: center; padding: 8rem 4rem; position: relative; z-index: 2; overflow: hidden; }
+  .cta-section::before { content: 'KSE'; position: absolute; font-size: 20rem; font-weight: 800; color: transparent; -webkit-text-stroke: 1px rgba(0,255,178,0.03); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; letter-spacing: -0.05em; user-select: none; }
+  .cta-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--neon); margin-bottom: 1.5rem; display: block; position: relative; z-index: 1; }
+  .cta-title { font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 2rem; position: relative; z-index: 1; }
+  .cta-title em { font-style: normal; display: block; color: var(--neon); }
+  .cta-sub { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--muted); margin-bottom: 3rem; position: relative; z-index: 1; max-width: 540px; margin-left: auto; margin-right: auto; line-height: 1.8; }
+  .cta-btn-wrap { position: relative; z-index: 1; }
+  .cta-btn { font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dark); background: var(--neon); border: none; padding: 1.2rem 3rem; cursor: crosshair; transition: background 0.2s, transform 0.15s; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); display: inline-block; text-decoration: none; font-weight: 700; }
+  .cta-btn:hover { background: #00e0a0; transform: translateY(-3px); }
+
+  footer { position: relative; z-index: 2; border-top: 1px solid var(--border); background: var(--dark2); padding: 2.5rem 4rem; display: flex; align-items: center; justify-content: space-between; }
+  .footer-logo { font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.15em; color: var(--neon); font-size: 0.85rem; }
+  .footer-copy { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+
+  .lang-toggle { position: fixed; bottom: 2rem; right: 2rem; z-index: 200; display: flex; border: 1px solid var(--border); background: rgba(8,12,20,0.9); backdrop-filter: blur(10px); overflow: hidden; }
+  .lang-btn { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 0.9rem; border: none; background: transparent; color: var(--muted); cursor: crosshair; transition: all 0.2s; }
+  .lang-btn.active { background: var(--neon); color: var(--dark); }
+
+  .marquee-wrap { position: relative; z-index: 2; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--dark2); padding: 1rem 0; }
+  .marquee-track { display: flex; gap: 3rem; animation: marquee 20s linear infinite; white-space: nowrap; width: max-content; }
+  .marquee-item { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+  .marquee-item strong { color: var(--neon); }
+  .marquee-sep { width: 4px; height: 4px; background: var(--neon); border-radius: 50%; opacity: 0.5; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">KSE<span>.BV</span></div>
+  <ul class="nav-links">
+    <li><a href="#dienst" id="nav-service">Dienst</a></li>
+    <li><a href="#proces" id="nav-process">Aanpak</a></li>
+    <li><a href="#wie" id="nav-who">Sectoren</a></li>
+    <li><a href="#founder" id="nav-founder">Team</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" id="nav-cta-btn">Laten We Scammen</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag" id="hero-tag">KSE BV — Kanker Scammer Engineering</div>
+  <h1>
+    <em id="hero-h1-line1">Wij Scammen.</em>
+    <span class="line2" id="hero-h1-line2">Telefonisch. B2B.</span>
+  </h1>
+  <p class="hero-sub" id="hero-sub">Kanker Scammer Engineering BV is dé cold calling specialist voor de Nederlandse B2B markt. Wij pakken de telefoon op, scammen ons een weg door de gatekeepers, en leveren jou geboekte meetings met beslissers.</p>
+  <div class="hero-btns">
+    <a href="#contact" class="btn-primary" id="hero-btn-primary">Start Met Scammen →</a>
+    <a href="#dienst" class="btn-secondary" id="hero-btn-secondary">Hoe We Scammen</a>
+  </div>
+  <div class="hero-visual">
+    <div class="orbit-ring ring1"><div class="orbit-dot"></div></div>
+    <div class="orbit-ring ring2"><div class="orbit-dot2"></div></div>
+    <div class="orbit-ring ring3"></div>
+    <div class="orbit-ring ring4"></div>
+    <div class="center-icon">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 10 C14 10 10 14 10 20 L10 22 C10 36 24 46 30 48 C36 46 50 36 50 22 L50 20 C50 14 46 10 40 10 C37 10 34 11 32 13 C31 14 29 14 28 13 C26 11 23 10 20 10 Z" stroke="#00FFB2" stroke-width="1.5" fill="none"/>
+        <path d="M22 28 C24 32 28 35 30 36 C32 35 36 32 38 28" stroke="#00FFB2" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="24" cy="23" r="2" fill="#00FFB2"/>
+        <circle cx="36" cy="23" r="2" fill="#00FFB2"/>
+        <path d="M30 48 L30 56" stroke="#00FFB2" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M24 56 L36 56" stroke="#00FFB2" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M10 18 L4 18 M50 18 L56 18" stroke="#00C8FF" stroke-width="1" stroke-linecap="round" stroke-dasharray="2,2"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num" data-target="300">0</span>
+    <span class="stat-label" id="stat1-label">Scam Calls p/w</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">NL</span>
+    <span class="stat-label" id="stat2-label">Markt Focus</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">100%</span>
+    <span class="stat-label" id="stat3-label">B2B Alleen</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">48u</span>
+    <span class="stat-label" id="stat4-label">Live na Akkoord</span>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><strong>Kanker Scammer Engineering</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">B2B Cold Calling NL<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Damir Avdic — Sarajevo/Vogošća</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">Telefonische Acquisitie<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Wij Scammen. Jij Sluit.</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">KSE BV Nederland<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Gatekeepers Bypassen</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">Beslissers Bellen<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Kanker Scammer Engineering</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">B2B Cold Calling NL<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Damir Avdic — Sarajevo/Vogošća</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">Telefonische Acquisitie<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Wij Scammen. Jij Sluit.</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">KSE BV Nederland<span class="marquee-sep"></span></span>
+    <span class="marquee-item"><strong>Gatekeepers Bypassen</strong><span class="marquee-sep"></span></span>
+    <span class="marquee-item">Beslissers Bellen<span class="marquee-sep"></span></span>
+  </div>
+</div>
+
+<!-- SERVICE -->
+<section id="dienst">
+  <div class="section-label">01 — De Scam Dienst</div>
+  <h2 class="section-title" id="service-title">Eén Dienst.<br><em>Telefonisch Scammen op Hoog Niveau.</em></h2>
+  <div class="service-grid">
+    <div class="service-main">
+      <div class="service-icon">
+        <svg viewBox="0 0 28 28"><path d="M7 8C7 8 7 4 12 4L16 4C21 4 21 8 21 8L21 12C21 16 16 20 14 21C12 20 7 16 7 12Z"/><path d="M11 13L13 15L17 11"/></svg>
+      </div>
+      <div class="service-name" id="service-name">B2B Cold Calling</div>
+      <p class="service-desc" id="service-desc">Wij scammen ons een weg door de Nederlandse B2B markt — van gatekeeper tot directeur, van receptionist tot CEO. Geen geautomatiseerde bots, geen copy-paste scripts. Echte mensen, echte gesprekken, echte resultaten. Wij bellen. Jij sluit.</p>
+      <ul class="feature-list">
+        <li id="feat1">Native NL bellers die gatekeepers kanker scammen</li>
+        <li id="feat2">Gepersonaliseerde scam scripts per sector en doelgroep</li>
+        <li id="feat3">Directe toegang tot beslissers — C-level en directeuren</li>
+        <li id="feat4">Real-time rapportage van elke scam call</li>
+        <li id="feat5">Wekelijkse scam sessies en performance reviews</li>
+        <li id="feat6">GDPR-compliant — legaal scammen alleen</li>
+      </ul>
+    </div>
+    <div class="service-side">
+      <div class="metric-box">
+        <span class="metric-val">85%</span>
+        <span class="metric-key" id="m1-key">Beslissers Bereikt</span>
+        <span class="metric-note" id="m1-note">Wij scammen langs gatekeepers met bewezen technieken</span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">3–5%</span>
+        <span class="metric-key" id="m2-key">Call-naar-Meeting Ratio</span>
+        <span class="metric-note" id="m2-note">Van eerste scam call naar bevestigde meeting</span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">€0</span>
+        <span class="metric-key" id="m3-key">Bij Geen Scam Resultaat</span>
+        <span class="metric-note" id="m3-note">Performance-based scammen beschikbaar op aanvraag</span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">300+</span>
+        <span class="metric-key" id="m4-key">Scam Calls per Week</span>
+        <span class="metric-note" id="m4-note">Volledig uitbesteed — jij hoeft nooit meer zelf te bellen</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="proces" class="process-section">
+  <div class="section-label">02 — Het Scam Proces</div>
+  <h2 class="section-title" id="process-title">Van Scammer naar<br><em>Kanker Gescammed.</em></h2>
+  <div class="process-steps">
+    <div class="process-step">
+      <span class="step-num">01</span>
+      <div class="step-title" id="step1-title">Scam Brief</div>
+      <p class="step-desc" id="step1-desc">We analyseren wie jouw ideale scam target is. ICP, sector, functietitel, bezwaren — alles wordt in kaart gebracht voordat we één telefoontje plegen.</p>
+    </div>
+    <div class="process-step">
+      <span class="step-num">02</span>
+      <div class="step-title" id="step2-title">Scam Script</div>
+      <p class="step-desc" id="step2-desc">Geen generiek script. Wij bouwen een op maat gemaakt scam verhaal met een killer opening, bulletproof bezwaarafhandeling en een sterke CTA.</p>
+    </div>
+    <div class="process-step">
+      <span class="step-num">03</span>
+      <div class="step-title" id="step3-title">Scam Live</div>
+      <p class="step-desc" id="step3-desc">Onze bellers gaan dagelijks de telefoon op. Elke call wordt gelogd, elke reactie geanalyseerd. We scammen slimmer met elke dag die verstrijkt.</p>
+    </div>
+    <div class="process-step">
+      <span class="step-num">04</span>
+      <div class="step-title" id="step4-title">Scam Rapport</div>
+      <p class="step-desc" id="step4-desc">Wekelijks krijg jij een volledig scam rapport — hoeveel calls, hoeveel meetings, hoeveel pipeline. Geboekte afspraken direct in jouw agenda.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section id="wie">
+  <div class="section-label">03 — Wie We Scammen</div>
+  <h2 class="section-title" id="who-title">Wij Scammen<br><em>Elke B2B Sector.</em></h2>
+  <div class="who-grid">
+    <div class="who-card"><span class="who-icon">// Scam Target 01</span><div class="who-title" id="who1-title">IT & SaaS</div><p class="who-desc" id="who1-desc">CTO's, IT-managers en inkopers in de tech sector. Wij spreken hun taal en scammen ons direct naar de beslissing.</p></div>
+    <div class="who-card"><span class="who-icon">// Scam Target 02</span><div class="who-title" id="who2-title">Finance & Consulting</div><p class="who-desc" id="who2-desc">CFO's, partners en directeuren in finance. Serieus, professioneel, en toch kanker scammer effectief.</p></div>
+    <div class="who-card"><span class="who-icon">// Scam Target 03</span><div class="who-title" id="who3-title">Industrie & Logistiek</div><p class="who-desc" id="who3-desc">Inkoopmanagers, operations directors en supply chain leads. Wij scammen door hun drukke agenda heen.</p></div>
+    <div class="who-card"><span class="who-icon">// Scam Target 04</span><div class="who-title" id="who4-title">Marketing & Media</div><p class="who-desc" id="who4-desc">Agencies en publishers die hun pipeline willen laten groeien. Wij scammen jouw toekomstige klanten warm.</p></div>
+    <div class="who-card"><span class="who-icon">// Scam Target 05</span><div class="who-title" id="who5-title">HR & Recruitment</div><p class="who-desc" id="who5-desc">HR-directeuren en hiring managers zijn druk — maar niet te druk voor een goed gescamde pitch van ons.</p></div>
+    <div class="who-card"><span class="who-icon">// Scam Target 06</span><div class="who-title" id="who6-title">Overig B2B NL</div><p class="who-desc" id="who6-desc">Als er een telefoon is en een beslisser aan de andere kant, scammen wij die voor jou. Gratis audit op aanvraag.</p></div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder">
+  <div class="section-label">04 — De Hoofdscammer</div>
+  <h2 class="section-title">Het Gezicht<br><em>Achter De Scam.</em></h2>
+  <div class="founder-section" style="margin-top: 4rem;">
+    <div class="founder-info">
+      <span class="founder-tag">// Founder & Chief Scammer Officer</span>
+      <div class="founder-name">Damir Avdic</div>
+      <span class="founder-fullname">Damir Avdic — Kanker Scammer Engineering BV</span>
+      <span class="founder-title">Founder — KSE BV, Sarajevo/Vogošća</span>
+      <p class="founder-bio" id="founder-bio">Damir Avdic is de man achter de scam. Vanuit Sarajevo bouwde hij KSE op met één missie: de Nederlandse B2B markt telefonisch veroveren voor zijn klanten.<br><br>Met jarenlange ervaring in directe acquisitie, een diep begrip van de Nederlandse zakelijke cultuur en een aangeboren talent voor het omzeilen van gatekeepers, leidt hij een team van professionele scammers dat elke dag de telefoon oppakt.<br><br>KSE BV draait op drie pijlers: hard scammen, slim scammen, en transparant scammen.</p>
+    </div>
+    <div class="founder-visual">
+      <div class="founder-avatar">
+        <span class="avatar-initials">DA</span>
+      </div>
+      <span class="location-tag">Sarajevo / Vogošća, BA</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <span class="cta-tag">// Klaar Om Te Scammen?</span>
+  <h2 class="cta-title" id="cta-title">Laten We Kanker<br><em>Scammen Samen.</em></h2>
+  <p class="cta-sub" id="cta-sub">Gratis intake. Geen bullshit. Geen verplichtingen. Wij vertellen je binnen 48 uur exact hoe we jouw B2B markt gaan scammen — en wat dat oplevert.</p>
+  <div class="cta-btn-wrap">
+    <a href="mailto:info@ksebv.nl" class="cta-btn">Kom Scammen Met Ons →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">KSE.BV</div>
+  <div class="footer-copy">© 2025 Kanker Scammer Engineering BV — Sarajevo, Bosnia & Herzegovina</div>
+  <div class="footer-copy" style="color: rgba(107,127,163,0.4);">NL</div>
+</footer>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" id="btn-nl" onclick="setLang('nl')">NL</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+
+<script>
+const en = {
+  'hero-tag': 'KSE BV — Cancer Scammer Engineering',
+  'hero-h1-line1': 'We Scam.',
+  'hero-h1-line2': 'By Phone. B2B.',
+  'hero-sub': 'Cancer Scammer Engineering BV is the B2B cold calling specialist for the Dutch market. We pick up the phone, scam our way past gatekeepers, and deliver booked meetings with decision-makers.',
+  'hero-btn-primary': 'Start Scamming →',
+  'hero-btn-secondary': 'How We Scam',
+  'stat1-label': 'Scam Calls p/w',
+  'stat2-label': 'Market Focus',
+  'stat3-label': 'B2B Only',
+  'stat4-label': 'Live After Deal',
+  'service-title': 'One Service.<br><em>Phone Scamming at the Highest Level.</em>',
+  'service-name': 'B2B Cold Calling',
+  'service-desc': 'We scam our way through the Dutch B2B market — from gatekeeper to director, from receptionist to CEO. No bots, no generic scripts. Real people, real conversations, real results. We call. You close.',
+  'feat1': 'Native NL callers who scam past every gatekeeper',
+  'feat2': 'Personalised scam scripts per sector and target profile',
+  'feat3': 'Direct access to decision-makers — C-level and directors',
+  'feat4': 'Real-time reporting on every scam call',
+  'feat5': 'Weekly scam sessions and performance reviews',
+  'feat6': 'GDPR-compliant — legal scamming only',
+  'm1-key': 'Decision-Makers Reached',
+  'm1-note': 'We scam past gatekeepers with proven techniques',
+  'm2-key': 'Call-to-Meeting Rate',
+  'm2-note': 'From first scam call to confirmed meeting',
+  'm3-key': 'Cost if No Results',
+  'm3-note': 'Performance-based scamming available on request',
+  'm4-key': 'Scam Calls Per Week',
+  'm4-note': 'Fully outsourced — you never have to call again',
+  'process-title': 'From Target to<br><em>Totally Scammed.</em>',
+  'step1-title': 'Scam Brief',
+  'step1-desc': 'We map out your ideal scam target. ICP, sector, job title, objections — everything is defined before we make a single call.',
+  'step2-title': 'Scam Script',
+  'step2-desc': 'No generic script. We build a custom scam story with a killer opener, bulletproof objection handling and a strong CTA.',
+  'step3-title': 'Scam Live',
+  'step3-desc': 'Our callers hit the phones daily. Every call is logged, every reaction analysed. We scam smarter with every passing day.',
+  'step4-title': 'Scam Report',
+  'step4-desc': 'Weekly you receive a full scam report — calls made, meetings booked, pipeline created. Appointments direct in your calendar.',
+  'who-title': 'We Scam<br><em>Every B2B Sector.</em>',
+  'who1-title': 'IT & SaaS',
+  'who1-desc': 'CTOs, IT managers and procurement in tech. We speak their language and scam straight to the decision.',
+  'who2-title': 'Finance & Consulting',
+  'who2-desc': 'CFOs, partners and directors in finance. Professional, serious, and devastatingly effective.',
+  'who3-title': 'Industry & Logistics',
+  'who3-desc': 'Procurement managers, operations directors and supply chain leads. We scam through their busy agendas.',
+  'who4-title': 'Marketing & Media',
+  'who4-desc': 'Agencies and publishers who want a growing pipeline. We warm up your future clients with a well-placed scam.',
+  'who5-title': 'HR & Recruitment',
+  'who5-desc': 'HR directors and hiring managers are busy — but not too busy for a well-executed pitch from our team.',
+  'who6-title': 'Other B2B NL',
+  'who6-desc': 'If there\'s a phone and a decision-maker on the other end, we\'ll scam them for you. Free audit on request.',
+  'founder-bio': 'Damir Avdic is the man behind the scam. From Sarajevo he built KSE with one mission: to conquer the Dutch B2B market by phone for his clients.<br><br>With years of experience in direct acquisition, a deep understanding of Dutch business culture, and a natural talent for bypassing gatekeepers, he leads a team of professional scammers that picks up the phone every single day.<br><br>KSE BV runs on three pillars: scam hard, scam smart, and scam transparently.',
+  'cta-title': 'Let\'s Scam<br><em>Together.</em>',
+  'cta-sub': 'Free intake. No bullshit. No obligations. We\'ll tell you within 48 hours exactly how we\'re going to scam your B2B market — and what that\'s worth.',
+};
+
+const nl = {
+  'hero-tag': 'KSE BV — Kanker Scammer Engineering',
+  'hero-h1-line1': 'Wij Scammen.',
+  'hero-h1-line2': 'Telefonisch. B2B.',
+  'hero-sub': 'Kanker Scammer Engineering BV is dé cold calling specialist voor de Nederlandse B2B markt. Wij pakken de telefoon op, scammen ons een weg door de gatekeepers, en leveren jou geboekte meetings met beslissers.',
+  'hero-btn-primary': 'Start Met Scammen →',
+  'hero-btn-secondary': 'Hoe We Scammen',
+  'stat1-label': 'Scam Calls p/w',
+  'stat2-label': 'Markt Focus',
+  'stat3-label': 'B2B Alleen',
+  'stat4-label': 'Live na Akkoord',
+  'service-title': 'Eén Dienst.<br><em>Telefonisch Scammen op Hoog Niveau.</em>',
+  'service-name': 'B2B Cold Calling',
+  'service-desc': 'Wij scammen ons een weg door de Nederlandse B2B markt — van gatekeeper tot directeur, van receptionist tot CEO. Geen geautomatiseerde bots, geen copy-paste scripts. Echte mensen, echte gesprekken, echte resultaten. Wij bellen. Jij sluit.',
+  'feat1': 'Native NL bellers die gatekeepers kanker scammen',
+  'feat2': 'Gepersonaliseerde scam scripts per sector en doelgroep',
+  'feat3': 'Directe toegang tot beslissers — C-level en directeuren',
+  'feat4': 'Real-time rapportage van elke scam call',
+  'feat5': 'Wekelijkse scam sessies en performance reviews',
+  'feat6': 'GDPR-compliant — legaal scammen alleen',
+  'm1-key': 'Beslissers Bereikt',
+  'm1-note': 'Wij scammen langs gatekeepers met bewezen technieken',
+  'm2-key': 'Call-naar-Meeting Ratio',
+  'm2-note': 'Van eerste scam call naar bevestigde meeting',
+  'm3-key': 'Bij Geen Scam Resultaat',
+  'm3-note': 'Performance-based scammen beschikbaar op aanvraag',
+  'm4-key': 'Scam Calls per Week',
+  'm4-note': 'Volledig uitbesteed — jij hoeft nooit meer zelf te bellen',
+  'process-title': 'Van Scammer naar<br><em>Kanker Gescammed.</em>',
+  'step1-title': 'Scam Brief',
+  'step1-desc': 'We analyseren wie jouw ideale scam target is. ICP, sector, functietitel, bezwaren — alles wordt in kaart gebracht voordat we één telefoontje plegen.',
+  'step2-title': 'Scam Script',
+  'step2-desc': 'Geen generiek script. Wij bouwen een op maat gemaakt scam verhaal met een killer opening, bulletproof bezwaarafhandeling en een sterke CTA.',
+  'step3-title': 'Scam Live',
+  'step3-desc': 'Onze bellers gaan dagelijks de telefoon op. Elke call wordt gelogd, elke reactie geanalyseerd. We scammen slimmer met elke dag die verstrijkt.',
+  'step4-title': 'Scam Rapport',
+  'step4-desc': 'Wekelijks krijg jij een volledig scam rapport — hoeveel calls, hoeveel meetings, hoeveel pipeline. Geboekte afspraken direct in jouw agenda.',
+  'who-title': 'Wij Scammen<br><em>Elke B2B Sector.</em>',
+  'who1-title': 'IT & SaaS',
+  'who1-desc': 'CTO\'s, IT-managers en inkopers in de tech sector. Wij spreken hun taal en scammen ons direct naar de beslissing.',
+  'who2-title': 'Finance & Consulting',
+  'who2-desc': 'CFO\'s, partners en directeuren in finance. Serieus, professioneel, en toch kanker scammer effectief.',
+  'who3-title': 'Industrie & Logistiek',
+  'who3-desc': 'Inkoopmanagers, operations directors en supply chain leads. Wij scammen door hun drukke agenda heen.',
+  'who4-title': 'Marketing & Media',
+  'who4-desc': 'Agencies en publishers die hun pipeline willen laten groeien. Wij scammen jouw toekomstige klanten warm.',
+  'who5-title': 'HR & Recruitment',
+  'who5-desc': 'HR-directeuren en hiring managers zijn druk — maar niet te druk voor een goed gescamde pitch van ons.',
+  'who6-title': 'Overig B2B NL',
+  'who6-desc': 'Als er een telefoon is en een beslisser aan de andere kant, scammen wij die voor jou. Gratis audit op aanvraag.',
+  'founder-bio': 'Damir Avdic is de man achter de scam. Vanuit Sarajevo bouwde hij KSE op met één missie: de Nederlandse B2B markt telefonisch veroveren voor zijn klanten.<br><br>Met jarenlange ervaring in directe acquisitie, een diep begrip van de Nederlandse zakelijke cultuur en een aangeboren talent voor het omzeilen van gatekeepers, leidt hij een team van professionele scammers dat elke dag de telefoon oppakt.<br><br>KSE BV draait op drie pijlers: hard scammen, slim scammen, en transparant scammen.',
+  'cta-title': 'Laten We Kanker<br><em>Scammen Samen.</em>',
+  'cta-sub': 'Gratis intake. Geen bullshit. Geen verplichtingen. Wij vertellen je binnen 48 uur exact hoe we jouw B2B markt gaan scammen — en wat dat oplevert.',
+};
+
+const IDS = ['hero-tag','hero-h1-line1','hero-h1-line2','hero-sub','hero-btn-primary','hero-btn-secondary','stat1-label','stat2-label','stat3-label','stat4-label','service-title','service-name','service-desc','feat1','feat2','feat3','feat4','feat5','feat6','m1-key','m1-note','m2-key','m2-note','m3-key','m3-note','m4-key','m4-note','process-title','step1-title','step1-desc','step2-title','step2-desc','step3-title','step3-desc','step4-title','step4-desc','who-title','who1-title','who1-desc','who2-title','who2-desc','who3-title','who3-desc','who4-title','who4-desc','who5-title','who5-desc','who6-title','who6-desc','founder-bio','cta-title','cta-sub'];
+
+function setLang(lang) {
+  const data = lang === 'en' ? en : nl;
+  document.getElementById('btn-nl').classList.toggle('active', lang === 'nl');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  IDS.forEach(id => { const el = document.getElementById(id); if (el && data[id]) el.innerHTML = data[id]; });
+}
+
+const statEls = document.querySelectorAll('[data-target]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      let start = 0;
+      const target = parseInt(e.target.dataset.target);
+      const step = ts => { if (!start) start = ts; const p = Math.min((ts-start)/1500,1); const ep = 1-Math.pow(1-p,3); e.target.textContent = Math.round(ep*target)+'+'; if(p<1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+statEls.forEach(el => obs.observe(el));
+
+document.querySelectorAll('.service-grid,.process-steps,.who-grid,.founder-section').forEach(el => {
+  el.style.cssText += 'opacity:0;transform:translateY(40px);transition:opacity 0.7s ease,transform 0.7s ease';
+  new IntersectionObserver(([e], o) => { if(e.isIntersecting){el.style.opacity='1';el.style.transform='translateY(0)';o.disconnect();} }, {threshold:0.1}).observe(el);
+});
+</script>
+</body>
+</html>
